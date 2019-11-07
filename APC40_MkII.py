@@ -160,13 +160,13 @@ class APC40_MkII(APC, OptimizedControlSurface):
          [ self._with_shift(button) for button in self._scene_launch_buttons_raw
          ]])
         self._loop_on_button = make_button(0, 90)
-        self._loop_start_button = make_button(0, 99)
+        self._loop_off_button = make_button(0, 99)
         self._loop_halve_button = make_button(0, 100)
         self._loop_double_button = make_button(0, 101)
         looper = LooperComponent(self)
-        looper.set_shift_button(self._shift_button)
-        looper.set_loop_toggle_button(self._loop_on_button)
-        looper.set_loop_start_button(self._loop_start_button)
+        looper.set_shift_button(self._shift_button) # currently unused
+        looper.set_loop_on_button(self._loop_on_button)
+        looper.set_loop_off_button(self._loop_off_button)
         looper.set_loop_double_button(self._loop_double_button)
         looper.set_loop_halve_button(self._loop_halve_button)
 

@@ -2,6 +2,10 @@ from _Framework.ButtonElement import ButtonElement #added
 from _Framework.EncoderElement import EncoderElement #added    
 
 
+def quantize(num):
+    return round(num / 4.0) * 4.0
+
+
 class LooperComponent():
   'Handles looping controls'
   __module__ = __name__
@@ -9,83 +13,63 @@ class LooperComponent():
 
   def __init__(self, parent):
     self._parent = parent
-    self._loop_toggle_button = None
-    self._loop_start_button = None
+    self._loop_on_button = None
+    self._loop_off_button = None
     self._loop_double_button = None
     self._loop_halve_button = None
-    self._loop_length = 64
-    self._loop_start = 0
     self._clip_length = 0
     self._shift_button = None
     self._current_clip = None
     self._shift_pressed = False
 
-  def set_loop_toggle_button(self, button):
+  def set_loop_on_button(self, button):
     assert ((button == None) or (isinstance(button, ButtonElement) and button.is_momentary()))
-    if self._loop_toggle_button != button:
-      if self._loop_toggle_button != None:
-        self._loop_toggle_button.remove_value_listener(self.toggle_loop)
-      self._loop_toggle_button = button
-      if (self._loop_toggle_button != None):
-        self._loop_toggle_button.add_value_listener(self.toggle_loop)
+    if self._loop_on_button != button:
+      if self._loop_on_button != None:
+        self._loop_on_button.remove_value_listener(self.start_loop)
+      self._loop_on_button = button
+      if (self._loop_on_button != None):
+        self._loop_on_button.add_value_listener(self.start_loop)
 
-
-  def toggle_loop(self, value):
+  def start_loop(self, value):
+    # toggles loop, sets start point to the current playing position
     self._parent.log_message('toggle loop ' + str(value))
     if value > 0: 
       self.get_current_clip()
       if self._current_clip != None:
         current_clip = self._current_clip
-        if not self._shift_pressed:
-          if current_clip.looping == 1:
-            current_clip.looping = 0
-          else:
-            self._clip_length = current_clip.length
-            current_clip.looping = 1
+        if current_clip.looping == 1:
+          current_clip.looping = 0
         else:
-          was_playing = current_clip.looping
+          self._clip_length = current_clip.length
+          current_position = current_clip.playing_position
           current_clip.looping = 1
-          if current_clip.loop_start >= 32.0:
-            current_clip.loop_end = current_clip.loop_end - 32.0
-            current_clip.loop_start = current_clip.loop_start - 32.0 
-          else:
-            current_clip.loop_end = 0.0 + self._loop_length
-            current_clip.loop_start = 0.0
-          if was_playing == 0:
-            current_clip.looping = 0
+          # set end to the end of the song for now
+          self._parent.log_message('loop end' + str(self._clip_length))
+          self._parent.log_message('loop start' + str(current_position))
+          current_clip.loop_end = quantize(self._clip_length)
+          # set start to the current position
+          current_clip.loop_start = quantize(current_position)
 
 
-  def set_loop_start_button(self, button):
+  def set_loop_off_button(self, button):
     assert ((button == None) or (isinstance(button, ButtonElement) and button.is_momentary()))
-    if self._loop_start_button != button:
-      if self._loop_start_button != None:
-        self._loop_start_button.remove_value_listener(self.move_loop_start)
-      self._loop_start_button = button
-      if (self._loop_start_button != None):
-        self._loop_start_button.add_value_listener(self.move_loop_start)
+    if self._loop_off_button != button:
+      if self._loop_off_button != None:
+        self._loop_off_button.remove_value_listener(self.stop_loop)
+      self._loop_off_button = button
+      if (self._loop_off_button != None):
+        self._loop_off_button.add_value_listener(self.stop_loop)
 
-  def move_loop_start(self, value):
-    if value == 1: 
+  def stop_loop(self, value):
+    # sets end point to the current playing position
+    self._parent.log_message('stop loop ' + str(value))
+    if value > 0: 
       self.get_current_clip()
       if self._current_clip != None:
         current_clip = self._current_clip
-        if not self._shift_pressed:
-          self._loop_start = round(current_clip.playing_position / 4.0) * 4
-          was_playing = current_clip.looping
-          current_clip.looping = 1
-          current_clip.loop_end = self._loop_start + self._loop_length
-          current_clip.loop_start = self._loop_start
-          # Twice to fix a weird bug
-          current_clip.loop_end = self._loop_start + self._loop_length
-          if was_playing == 0:
-            current_clip.looping = 0
-        else:
-          was_playing = current_clip.looping
-          current_clip.looping = 1
-          current_clip.loop_end = current_clip.loop_end + 32.0
-          current_clip.loop_start = current_clip.loop_start + 32.0
-          if was_playing == 0:
-            current_clip.looping = 0
+        current_position = current_clip.playing_position
+        current_clip.loop_end = quantize(current_position)
 
   def set_loop_double_button(self, button):
     assert ((button == None) or (isinstance(button, ButtonElement) and button.is_momentary()))
