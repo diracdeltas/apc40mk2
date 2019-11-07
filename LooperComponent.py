@@ -1,6 +1,7 @@
 from _Framework.ButtonElement import ButtonElement #added
 from _Framework.EncoderElement import EncoderElement #added    
 
+
 class LooperComponent():
   'Handles looping controls'
   __module__ = __name__
@@ -30,7 +31,8 @@ class LooperComponent():
 
 
   def toggle_loop(self, value):
-    if value == 1: 
+    self._parent.log_message('toggle loop ' + str(value))
+    if value > 0: 
       self.get_current_clip()
       if self._current_clip != None:
         current_clip = self._current_clip

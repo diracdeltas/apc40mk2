@@ -7,7 +7,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from functools import partial
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from _Framework.ButtonElement import ButtonElement
 from _Framework.ComboElement import ComboElement, DoublePressElement, MultiElement
 from _Framework.ControlSurface import OptimizedControlSurface
 from _Framework.Layer import Layer
@@ -17,7 +16,6 @@ from _Framework.SessionRecordingComponent import SessionRecordingComponent
 from _Framework.SessionZoomingComponent import SessionZoomingComponent
 from _Framework.ClipCreator import ClipCreator
 from _Framework.Util import recursive_map
-from _Framework.InputControlElement import *
 from _APC.APC import APC
 from _APC.DeviceComponent import DeviceComponent
 from _APC.DeviceBankButtonElement import DeviceBankButtonElement
@@ -25,9 +23,9 @@ from _APC.DetailViewCntrlComponent import DetailViewCntrlComponent
 from _APC.SessionComponent import SessionComponent
 from _APC.ControlElementUtils import make_button, make_encoder, make_slider, make_ring_encoder, make_pedal_button
 from _APC.SkinDefault import make_rgb_skin, make_default_skin, make_stop_button_skin, make_crossfade_button_skin
-from . import Colors
+from .Colors import *
 from .BankToggleComponent import BankToggleComponent
-from .LooperCompoonent import LooperComponent
+from .LooperComponent import LooperComponent
 from .MixerComponent import MixerComponent
 from .QuantizationComponent import QuantizationComponent
 from .TransportComponent import TransportComponent
@@ -53,7 +51,6 @@ class APC40_MkII(APC, OptimizedControlSurface):
             self._create_quantization_selection()
             self._create_recording()
             self._session.set_mixer(self._mixer)
-        self._setup_looper_control()
         self.set_highlighting_session_component(self._session)
         self.set_device_component(self._device)
 
@@ -125,13 +122,13 @@ class APC40_MkII(APC, OptimizedControlSurface):
         self._quantization_buttons = ButtonMatrixElement(rows=[
          [ ComboElement(button, modifiers=[self._shift_button]) for button in self._raw_select_buttons
          ]])
-        self._metronome_button = make_on_off_button(0, 90, name='Metronome_Button')
+        #self._metronome_button = make_on_off_button(0, 90, name='Metronome_Button')
         self._play_button = make_on_off_button(0, 91, name='Play_Button')
         self._record_button = make_on_off_button(0, 93, name='Record_Button')
         self._session_record_button = make_on_off_button(0, 102, name='Session_Record_Button')
-        self._nudge_down_button = make_button(0, 100, name='Nudge_Down_Button')
-        self._nudge_up_button = make_button(0, 101, name='Nudge_Up_Button')
-        self._tap_tempo_button = make_button(0, 99, name='Tap_Tempo_Button')
+        #self._nudge_down_button = make_button(0, 100, name='Nudge_Down_Button')
+        #self._nudge_up_button = make_button(0, 101, name='Nudge_Up_Button')
+        #self._tap_tempo_button = make_button(0, 99, name='Tap_Tempo_Button')
         self._tempo_control = make_encoder(0, 13, name='Tempo_Control')
         self._device_controls = ButtonMatrixElement(rows=[
          [ make_ring_encoder(16 + index, 24 + index, name='Device_Control_%d' % index) for index in xrange(8)
@@ -162,6 +159,16 @@ class APC40_MkII(APC, OptimizedControlSurface):
         self._shifted_scene_buttons = ButtonMatrixElement(rows=[
          [ self._with_shift(button) for button in self._scene_launch_buttons_raw
          ]])
+        self._loop_on_button = make_button(0, 90)
+        self._loop_start_button = make_button(0, 99)
+        self._loop_halve_button = make_button(0, 100)
+        self._loop_double_button = make_button(0, 101)
+        looper = LooperComponent(self)
+        looper.set_shift_button(self._shift_button)
+        looper.set_loop_toggle_button(self._loop_on_button)
+        looper.set_loop_start_button(self._loop_start_button)
+        looper.set_loop_double_button(self._loop_double_button)
+        looper.set_loop_halve_button(self._loop_halve_button)
 
     def _create_bank_toggle(self):
         self._bank_toggle = BankToggleComponent(is_enabled=False, layer=Layer(bank_toggle_button=self._bank_button))
@@ -175,9 +182,9 @@ class APC40_MkII(APC, OptimizedControlSurface):
             return self._bank_toggle.create_toggle_element(off_control=button)
 
         self._session = SessionComponent(NUM_TRACKS, NUM_SCENES, auto_name=True, is_enabled=False, enable_skinning=True, layer=Layer(track_bank_left_button=when_bank_off(self._left_button), track_bank_right_button=when_bank_off(self._right_button), scene_bank_up_button=when_bank_off(self._up_button), scene_bank_down_button=when_bank_off(self._down_button), page_left_button=when_bank_on(self._left_button), page_right_button=when_bank_on(self._right_button), page_up_button=when_bank_on(self._up_button), page_down_button=when_bank_on(self._down_button), stop_track_clip_buttons=self._stop_buttons, stop_all_clips_button=self._stop_all_button, scene_launch_buttons=self._scene_launch_buttons, clip_launch_buttons=self._session_matrix))
-        clip_color_table = Colors.LIVE_COLORS_TO_MIDI_VALUES.copy()
+        clip_color_table = LIVE_COLORS_TO_MIDI_VALUES.copy()
         clip_color_table[16777215] = 119
-        self._session.set_rgb_mode(clip_color_table, Colors.RGB_COLOR_TABLE)
+        self._session.set_rgb_mode(clip_color_table, RGB_COLOR_TABLE)
         self._session_zoom = SessionZoomingComponent(self._session, name='Session_Overview', enable_skinning=True, is_enabled=False, layer=Layer(button_matrix=self._shifted_matrix, nav_left_button=self._with_shift(self._left_button), nav_right_button=self._with_shift(self._right_button), nav_up_button=self._with_shift(self._up_button), nav_down_button=self._with_shift(self._down_button), scene_bank_buttons=self._shifted_scene_buttons))
 
     def _create_mixer(self):
@@ -197,7 +204,7 @@ class APC40_MkII(APC, OptimizedControlSurface):
 
     def _create_transport(self):
         self._transport = TransportComponent(name='Transport', is_enabled=False, layer=Layer(shift_button=self._shift_button, play_button=self._play_button, stop_button=ComboElement(self._play_button, modifiers=[
-         self._shift_button]), record_button=self._record_button, metronome_button=self._metronome_button, tap_tempo_button=self._tap_tempo_button, nudge_down_button=self._nudge_down_button, nudge_up_button=self._nudge_up_button, tempo_encoder=self._tempo_control), play_toggle_model_transform=lambda v: v)
+         self._shift_button]), record_button=self._record_button, tempo_encoder=self._tempo_control), play_toggle_model_transform=lambda v: v)
 
     def _create_device(self):
         self._device = DeviceComponent(name='Device', is_enabled=False, layer=Layer(parameter_controls=self._device_controls, bank_buttons=self._device_bank_buttons, bank_prev_button=self._device_prev_bank_button, bank_next_button=self._device_next_bank_button, on_off_button=self._device_on_off_button, lock_button=self._device_lock_button), device_selection_follows_track_selection=True)
@@ -212,19 +219,6 @@ class APC40_MkII(APC, OptimizedControlSurface):
     def _create_recording(self):
         record_button = MultiElement(self._session_record_button, self._foot_pedal_button.single_press)
         self._session_recording = SessionRecordingComponent(ClipCreator(), self._view_control, name='Session_Recording', is_enabled=False, layer=Layer(new_button=self._foot_pedal_button.double_press, record_button=record_button, _uses_foot_pedal=self._foot_pedal_button))
-
-    def _setup_looper_control(self):
-        is_momentary = True
-        loop_on = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 4, 50)
-        loop_start = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 5, 50)
-        halve = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 6, 50)
-        double = ButtonElement(is_momentary, MIDI_NOTE_TYPE, 7, 50)
-        looper = LooperComponent(self)
-        looper.set_shift_button(self._shift_button)
-        looper.set_loop_toggle_button(loop_on)
-        looper.set_loop_start_button(loop_start)
-        looper.set_loop_double_button(double)
-        looper.set_loop_halve_button(halve)
 
     def get_matrix_button(self, column, row):
         return self._matrix_rows_raw[row][column]
