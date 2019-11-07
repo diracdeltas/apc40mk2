@@ -22,6 +22,13 @@ class LooperComponent():
     self._current_clip = None
     self._shift_pressed = False
 
+  def get_loop_length(self):
+    if self._current_clip != None:
+        clip = self._current_clip
+        return clip.loop_end - clip.loop_start
+    else:
+        return 0
+
   def set_loop_on_button(self, button):
     assert ((button == None) or (isinstance(button, ButtonElement) and button.is_momentary()))
     if self._loop_on_button != button:
@@ -33,7 +40,6 @@ class LooperComponent():
 
   def start_loop(self, value):
     # toggles loop, sets start point to the current playing position
-    self._parent.log_message('toggle loop ' + str(value))
     if value > 0: 
       self.get_current_clip()
       if self._current_clip != None:
@@ -41,12 +47,11 @@ class LooperComponent():
         if current_clip.looping == 1:
           current_clip.looping = 0
         else:
-          self._clip_length = current_clip.length
+          if self._clip_length == 0:
+            self._clip_length = current_clip.length
           current_position = current_clip.playing_position
           current_clip.looping = 1
           # set end to the end of the song for now
-          self._parent.log_message('loop end' + str(self._clip_length))
-          self._parent.log_message('loop start' + str(current_position))
           current_clip.loop_end = quantize(self._clip_length)
           # set start to the current position
           current_clip.loop_start = quantize(current_position)
@@ -63,7 +68,6 @@ class LooperComponent():
 
   def stop_loop(self, value):
     # sets end point to the current playing position
-    self._parent.log_message('stop loop ' + str(value))
     if value > 0: 
       self.get_current_clip()
       if self._current_clip != None:
@@ -83,18 +87,15 @@ class LooperComponent():
   # Doubles loop without shift
   # Moves loop one bar right with shift
   def increase_loop(self, value):
-    if value == 1: 
+    if value > 0:
       self.get_current_clip()
       if self._current_clip != None:
         current_clip = self._current_clip
         was_playing = current_clip.looping
         current_clip.looping = 1
+        loop_length = self.get_loop_length()
         if not self._shift_pressed:
-          if self._loop_length <= 128:
-            self._loop_length = self._loop_length * 2.0
-          else:
-            self._loop_length = self._loop_length + 16 
-          current_clip.loop_end = current_clip.loop_start + self._loop_length
+          current_clip.loop_end = current_clip.loop_start + loop_length * 2.0
         else:
           current_clip.loop_end = current_clip.loop_end + 4.0
           current_clip.loop_start = current_clip.loop_start + 4.0
@@ -114,24 +115,21 @@ class LooperComponent():
   # halves loop without shift
   # left loop one bar right with shift
   def decrease_loop(self, value):
-    if value == 1: 
+    if value > 0:
       self.get_current_clip()
       if self._current_clip != None:
         current_clip = self._current_clip
         was_playing = current_clip.looping
         current_clip.looping = 1
+        loop_length = self.get_loop_length()
         if not self._shift_pressed:
-          if self._loop_length <= 128:
-            self._loop_length = self._loop_length / 2.0
-          else:
-            self._loop_length = self._loop_length - 16 
-          current_clip.loop_end = current_clip.loop_start + self._loop_length
+          current_clip.loop_end = current_clip.loop_start + loop_length / 2.0
         else:
           if current_clip.loop_start >= 4.0:
             current_clip.loop_end = current_clip.loop_end - 4.0
             current_clip.loop_start = current_clip.loop_start - 4.0
           else:
-            current_clip.loop_end = 0.0 + self._loop_length 
+            current_clip.loop_end = 0.0 + loop_length
             current_clip.loop_start = 0.0 
         if was_playing == 0:
           current_clip.looping = 0
