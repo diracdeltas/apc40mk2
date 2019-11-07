@@ -20,8 +20,8 @@ the custom mappings are as follows:
 * `TAP TEMPO` - sets loop end point to the nearest bar of the current playing position
 * `NUDGE-` - halves the loop length
 * `NUDGE+` - doubles the loop length
-* `SHIFT` + NUDGE-` - moves loop position left by a bar
-* `SHIFT` + NUDGE+` - moves loop position right by a bar
+* `SHIFT` + `NUDGE-` - moves loop position left by a bar
+* `SHIFT` + `NUDGE+` - moves loop position right by a bar
 
 ## credits
 
