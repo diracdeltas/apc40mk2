@@ -91,16 +91,12 @@ class LooperComponent():
       self.get_current_clip()
       if self._current_clip != None:
         current_clip = self._current_clip
-        was_playing = current_clip.looping
-        current_clip.looping = 1
         loop_length = self.get_loop_length()
-        if not self._shift_pressed:
+        if self._shift_pressed:
           current_clip.loop_end = current_clip.loop_start + loop_length * 2.0
         else:
           current_clip.loop_end = current_clip.loop_end + 4.0
           current_clip.loop_start = current_clip.loop_start + 4.0
-        if was_playing == 0:
-          current_clip.looping = 0
 
 
   def set_loop_halve_button(self, button):
@@ -119,10 +115,8 @@ class LooperComponent():
       self.get_current_clip()
       if self._current_clip != None:
         current_clip = self._current_clip
-        was_playing = current_clip.looping
-        current_clip.looping = 1
         loop_length = self.get_loop_length()
-        if not self._shift_pressed:
+        if self._shift_pressed:
           current_clip.loop_end = current_clip.loop_start + loop_length / 2.0
         else:
           if current_clip.loop_start >= 4.0:
@@ -130,10 +124,7 @@ class LooperComponent():
             current_clip.loop_start = current_clip.loop_start - 4.0
           else:
             current_clip.loop_end = 0.0 + loop_length
-            current_clip.loop_start = 0.0 
-        if was_playing == 0:
-          current_clip.looping = 0
-
+            current_clip.loop_start = 0.0
 
   def get_current_clip(self):
     if (self._parent.song().view.highlighted_clip_slot != None):

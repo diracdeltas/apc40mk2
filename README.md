@@ -25,10 +25,12 @@ the custom mappings are as follows:
 
 * `METRONOME` - turns on looping for the currently selected clip (must be warped) and sets the loop start point to the nearest bar of the current playing position
 * `TAP TEMPO` - sets loop end point to the nearest bar of the current playing position
-* `NUDGE-` - halves the loop length
-* `NUDGE+` - doubles the loop length
-* `SHIFT` + `NUDGE-` - moves loop position left by a bar
-* `SHIFT` + `NUDGE+` - moves loop position right by a bar
+* `NUDGE-` - moves loop position left by a bar
+* `NUDGE+` - moves loop position right by a bar
+* `SHIFT NUDGE-` - halves the loop length
+* `SHIFT NUDGE+` - doubles the loop length. currently this is somewhat buggy
+  and will cause the play position to jump sometimes (i think this
+  is an ableton bug)
 
 ## credits
 
