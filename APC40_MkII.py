@@ -122,13 +122,13 @@ class APC40_MkII(APC, OptimizedControlSurface):
         self._quantization_buttons = ButtonMatrixElement(rows=[
          [ ComboElement(button, modifiers=[self._shift_button]) for button in self._raw_select_buttons
          ]])
-        #self._metronome_button = make_on_off_button(0, 90, name='Metronome_Button')
+        self._metronome_button = make_on_off_button(0, 90, name='Metronome_Button')
         self._play_button = make_on_off_button(0, 91, name='Play_Button')
         self._record_button = make_on_off_button(0, 93, name='Record_Button')
         self._session_record_button = make_on_off_button(0, 102, name='Session_Record_Button')
-        #self._nudge_down_button = make_button(0, 100, name='Nudge_Down_Button')
-        #self._nudge_up_button = make_button(0, 101, name='Nudge_Up_Button')
-        #self._tap_tempo_button = make_button(0, 99, name='Tap_Tempo_Button')
+        self._nudge_down_button = make_button(0, 100, name='Nudge_Down_Button')
+        self._nudge_up_button = make_button(0, 101, name='Nudge_Up_Button')
+        self._tap_tempo_button = make_button(0, 99, name='Tap_Tempo_Button')
         self._tempo_control = make_encoder(0, 13, name='Tempo_Control')
         self._device_controls = ButtonMatrixElement(rows=[
          [ make_ring_encoder(16 + index, 24 + index, name='Device_Control_%d' % index) for index in xrange(8)
@@ -204,7 +204,7 @@ class APC40_MkII(APC, OptimizedControlSurface):
 
     def _create_transport(self):
         self._transport = TransportComponent(name='Transport', is_enabled=False, layer=Layer(shift_button=self._shift_button, play_button=self._play_button, stop_button=ComboElement(self._play_button, modifiers=[
-         self._shift_button]), record_button=self._record_button, tempo_encoder=self._tempo_control), play_toggle_model_transform=lambda v: v)
+         self._shift_button]), record_button=self._record_button, metronome_button=self._metronome_button, tap_tempo_button=self._tap_tempo_button, nudge_down_button=self._nudge_down_button, nudge_up_button=self._nudge_up_button, tempo_encoder=self._tempo_control), play_toggle_model_transform=lambda v: v)
 
     def _create_device(self):
         self._device = DeviceComponent(name='Device', is_enabled=False, layer=Layer(parameter_controls=self._device_controls, bank_buttons=self._device_bank_buttons, bank_prev_button=self._device_prev_bank_button, bank_next_button=self._device_next_bank_button, on_off_button=self._device_on_off_button, lock_button=self._device_lock_button), device_selection_follows_track_selection=True)
