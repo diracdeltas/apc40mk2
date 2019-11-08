@@ -29,8 +29,14 @@ from .LooperComponent import LooperComponent
 from .MixerComponent import MixerComponent
 from .QuantizationComponent import QuantizationComponent
 from .TransportComponent import TransportComponent
-NUM_TRACKS = 8
+NUM_TRACKS = 4  # since we use tracks 5-8 for loop controls
 NUM_SCENES = 5
+
+
+def get_identifier(track, scene):
+    # gets the identifier for a launch button in the scene matrix
+    return 32 + track - 8 * scene
+
 
 class APC40_MkII(APC, OptimizedControlSurface):
 
@@ -67,7 +73,7 @@ class APC40_MkII(APC, OptimizedControlSurface):
             return button
 
         def make_matrix_button(track, scene):
-            return make_color_button(0, 32 + track - NUM_TRACKS * scene, name='%d_Clip_%d_Button' % (track, scene))
+            return make_color_button(0, get_identifier(track, scene), name='%d_Clip_%d_Button' % (track, scene))
 
         def make_stop_button(track):
             return make_button(track, 52, name='%d_Stop_Button' % track, skin=self._stop_button_skin)
@@ -159,16 +165,17 @@ class APC40_MkII(APC, OptimizedControlSurface):
         self._shifted_scene_buttons = ButtonMatrixElement(rows=[
          [ self._with_shift(button) for button in self._scene_launch_buttons_raw
          ]])
-        self._loop_on_button = make_button(0, 90)
-        self._loop_off_button = make_button(0, 99)
-        self._loop_halve_button = make_button(0, 100)
-        self._loop_double_button = make_button(0, 101)
-        looper = LooperComponent(self)
-        looper.set_shift_button(self._shift_button) # currently unused
-        looper.set_loop_on_button(self._loop_on_button)
-        looper.set_loop_off_button(self._loop_off_button)
-        looper.set_loop_double_button(self._loop_double_button)
-        looper.set_loop_halve_button(self._loop_halve_button)
+        for track in range(4):
+          loop_on_button = make_button(0, get_identifier(4 + track, 0))
+          loop_end_button = make_button(0, get_identifier(4 + track, 1))
+          loop_halve_button = make_button(0, get_identifier(4 + track, 2))
+          loop_stop_button = make_button(0, get_identifier(4 + track, 3))
+          looper = LooperComponent(self)
+          looper.set_track_number(track)
+          looper.set_loop_on_button(loop_on_button)
+          looper.set_loop_stop_button(loop_stop_button)
+          looper.set_loop_end_button(loop_end_button)
+          looper.set_loop_halve_button(loop_halve_button)
 
     def _create_bank_toggle(self):
         self._bank_toggle = BankToggleComponent(is_enabled=False, layer=Layer(bank_toggle_button=self._bank_button))
