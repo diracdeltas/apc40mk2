@@ -21,10 +21,11 @@ CDJ-style looping control mapping for the APC40MKII ableton midi controller
 
 ## usage
 
-the custom mappings are as follows:
+the custom mappings are as follows. note that all clips must be warped for this
+to work.
 
-* `METRONOME` - if not already looping, this turns on looping for the currently selected clip (must be warped) and sets the loop start point to the nearest bar of the current playing position. if already looping, this turns off looping.
-* `TAP TEMPO` - sets loop end point to the nearest bar of the current playing position
+* `METRONOME` - sets the loop start point to the nearest bar of the current playing position. if already looping, this turns off looping.
+* `TAP TEMPO` - sets loop end point to the nearest bar of the current playing position and engages looping.
 * `NUDGE-` - moves entire loop left by a bar
 * `NUDGE+` - moves entire loop right by a bar
 * `SHIFT NUDGE-` - halves the loop length
