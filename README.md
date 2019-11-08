@@ -31,6 +31,10 @@ to work.
 * `SHIFT NUDGE-` - halves the loop length
 * `SHIFT NUDGE+` - doubles the loop length. note: this will cause the play position to jump unnecessarily sometimes (i think this is an ableton bug)
 
+## demo/tutorial
+
+https://www.youtube.com/watch?v=YILKOWhN2ag
+
 ## credits
 
 thanks to will marshall for doing most of the work for LooperComponent in https://github.com/willrjmarshall/AbletonDJTemplateUnsupported.

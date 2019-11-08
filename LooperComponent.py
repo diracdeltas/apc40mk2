@@ -84,8 +84,8 @@ class LooperComponent():
       if (self._loop_double_button != None):
         self._loop_double_button.add_value_listener(self.increase_loop)
 
-  # Doubles loop without shift
-  # Moves loop one bar right with shift
+  # Doubles loop with shift
+  # Moves loop one bar right without shift
   def increase_loop(self, value):
     if value > 0:
       self.get_current_clip()
@@ -108,8 +108,8 @@ class LooperComponent():
       if (self._loop_halve_button != None):
         self._loop_halve_button.add_value_listener(self.decrease_loop)
 
-  # halves loop without shift
-  # left loop one bar right with shift
+  # halves loop with shift
+  # left loop one bar right without shift
   def decrease_loop(self, value):
     if value > 0:
       self.get_current_clip()
