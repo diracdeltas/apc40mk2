@@ -3,7 +3,7 @@ from _Framework.EncoderElement import EncoderElement #added
 
 
 def quantize(num):
-    return round(num / 4.0) * 4.0
+    return round(num / 2.0) * 2.0
 
 
 class LooperComponent():
