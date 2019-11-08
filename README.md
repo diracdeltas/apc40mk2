@@ -9,8 +9,15 @@ CDJ-style looping control mapping for the APC40MKII ableton midi controller
 
 ## installing
 
-1. download apc40mkii_azuki.zip
-2. install it using the instructions at https://help.ableton.com/hc/en-us/articles/209072009-Installing-Third-Party-Control-Surfaces
+1. download release.zip from https://github.com/diracdeltas/apc40mk2/releases/latest
+2. unzip it
+3. copy the unzipped `apc40mkii_azuki` folder to your Ableton MIDI remote
+   scripts directory using the instructions at
+   https://help.ableton.com/hc/en-us/articles/209072009-Installing-Third-Party-Control-Surfaces.
+   for instance on Mac with Ableton 10, this would be `/Applications/Ableton
+   Live 10 Suite.app/Contents/App-Resources/MIDI Remote Scripts`.
+4. open Ableton Preferences with your apc40mk2 plugged in and select `apc40mkii
+   azuki` as the control surface.
 
 ## usage
 
